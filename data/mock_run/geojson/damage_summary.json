@@ -1,0 +1,13 @@
+{
+  "total_buildings": 27,
+  "damaged_buildings_count": 9,
+  "flood_damaged_buildings": 1,
+  "debris_damaged_buildings": 8,
+  "total_roads_count": 2,
+  "impassable_roads_count": 2,
+  "total_roads_km": 31.85,
+  "damaged_roads_km": 4.44,
+  "total_bridges": 1,
+  "damaged_bridges_count": 0,
+  "damage_threshold_used": 0.35
+}

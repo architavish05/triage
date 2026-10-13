@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "id": "HLZ_093", "geometry": {"type": "Point", "coordinates": [85.3416, 27.8793]}, "properties": {"hlz_id": "HLZ_093", "slope_deg": 2.8, "area_m2": 1800.0, "nearest_settlement": "Larcha", "distance_to_settlement_m": 1864.4, "connected_footpath": true}}]}

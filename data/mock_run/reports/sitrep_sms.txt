@@ -1,0 +1,14 @@
+=== [TRIAGE DISASTER SITREP: 2026-08-26] ===
+ROI BBOX: [85.20, 27.80, 85.45, 28.15]
+HAZARD TOTALS: 9 bldgs damaged | 4.44 km roads cut | 0 bridges broken | 2 cut-off communities | ~45 stranded (ESTIMATE)
+
+--- TOP 10 RESCUE PRIORITIES (RANKED BY TRAPPED RISK & ROAD SEVERANCE) ---
+1. Tatopani [85.388, 28.062] | Cutoff: 95% | TrappedRisk: 45% | Bldgs: 4 | Stranded: ~20 (est) | EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY)
+2. Larcha [85.325, 27.887] | Cutoff: 80% | TrappedRisk: 45% | Bldgs: 1 | Stranded: ~5 (est) | EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY)
+3. Barhabise [85.263, 27.975] | Cutoff: 0% | TrappedRisk: 30% | Bldgs: 4 | Stranded: ~20 (est) | MONITORING / STANDBY
+
+--- HELICOPTER LANDING ZONES (1 SAFE SITES IDENTIFIED) ---
+- HLZ_093: [85.3416, 27.8793] near Larcha (1864m away, slope 2.8 deg)
+
+LEGAL ATTR: Contains modified Copernicus Sentinel data 2026. Copernicus WorldDEM-30 © DLR/Airbus/ESA. © OpenStreetMap contributors.
+DISCLAIMER: Educational prototype. No images of victims. All pop counts are estimates.

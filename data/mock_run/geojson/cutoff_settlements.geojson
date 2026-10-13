@@ -1,0 +1,71 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "place/3",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.3875,
+          28.0625
+        ]
+      },
+      "properties": {
+        "rank": 1,
+        "name": "Tatopani",
+        "place": "village",
+        "population_est": 2300,
+        "cutoff_prob": 0.95,
+        "cutoff_prob_hospital": 0.95,
+        "cutoff_prob_town": 0.95,
+        "nearest_hospital": "Barhabise Primary Health Centre",
+        "pre_event_distance_km": 36.21
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "place/2",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.325,
+          27.8875
+        ]
+      },
+      "properties": {
+        "rank": 2,
+        "name": "Larcha",
+        "place": "village",
+        "population_est": 1200,
+        "cutoff_prob": 0.795,
+        "cutoff_prob_hospital": 0.795,
+        "cutoff_prob_town": 0.795,
+        "nearest_hospital": "Barhabise Primary Health Centre",
+        "pre_event_distance_km": 15.84
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "place/1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.2625,
+          27.975
+        ]
+      },
+      "properties": {
+        "rank": 3,
+        "name": "Barhabise",
+        "place": "town",
+        "population_est": 7500,
+        "cutoff_prob": 0.0,
+        "cutoff_prob_hospital": 0.0,
+        "cutoff_prob_town": 0.0,
+        "nearest_hospital": "Barhabise Primary Health Centre",
+        "pre_event_distance_km": 0.0
+      }
+    }
+  ]
+}

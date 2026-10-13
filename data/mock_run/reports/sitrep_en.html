@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Triage Situation Report - 2026-08-26</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.35; color: #1e293b; margin: 0; padding: 0; }
+    .header { border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .title-box h1 { margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; text-transform: uppercase; }
+    .title-box .subtitle { font-size: 10px; color: #64748b; font-weight: 600; }
+    .meta-box { text-align: right; font-size: 9.5px; color: #475569; }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 9px; text-transform: uppercase; background: #fee2e2; color: #991b1b; }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
+    .kpi-val { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+    .kpi-val.alert { color: #dc2626; }
+    .kpi-label { font-size: 8.5px; text-transform: uppercase; font-weight: 700; color: #64748b; }
+    .estimate-tag { font-size: 7.5px; color: #d97706; font-weight: 700; text-transform: uppercase; }
+
+    .section-title { font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 10px; margin-bottom: 6px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5px; }
+    th { background: #f1f5f9; color: #334155; font-weight: 700; text-align: left; padding: 5px 6px; border-bottom: 1.5px solid #cbd5e1; text-transform: uppercase; font-size: 8.5px; }
+    td { padding: 4.5px 6px; border-bottom: 1px solid #f1f5f9; }
+    tr:nth-child(even) { background: #fafafa; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+
+    .sensor-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 9px; }
+    .sensor-item strong { color: #334155; }
+
+    footer { border-top: 1px solid #cbd5e1; padding-top: 6px; margin-top: 12px; font-size: 8px; color: #64748b; line-height: 1.3; }
+    .attribution-text { margin-bottom: 3px; font-weight: 500; }
+    .disclaimer { font-style: italic; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-box">
+      <h1>Triage Situation Report</h1>
+      <div class="subtitle">RAPID DISASTER INTELLIGENCE &amp; RESCUE PRIORITIZATION</div>
+    </div>
+    <div class="meta-box">
+      <div><strong>Event Date:</strong> 2026-08-26</div>
+      <div><strong>BBox:</strong> [85.200, 27.800, 85.450, 28.150]</div>
+      <div><span class="badge">PROTOTYPE SITREP</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val alert">9</div>
+      <div class="kpi-label">Buildings Damaged</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">4.44 km</div>
+      <div class="kpi-label">Roads Cut/Impassable</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">0</div>
+      <div class="kpi-label">Bridges Severed</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val alert">2</div>
+      <div class="kpi-label">Cut-off Communities</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">0</div>
+      <div class="kpi-label">Dry Islands</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val alert">45</div>
+      <div class="kpi-label">Stranded (<span class="estimate-tag">Estimate</span>)</div>
+    </div>
+  </div>
+
+  <div class="section-title">Priority Rescue Targets (Ranked by Trapped Risk &amp; Cut-Off Severity)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 5%;">Rank</th>
+        <th style="width: 25%;">Settlement</th>
+        <th style="width: 12%;" class="text-center">Cut-off Prob</th>
+        <th style="width: 12%;" class="text-center">Trapped Risk</th>
+        <th style="width: 10%;" class="text-center">At Risk Bldgs</th>
+        <th style="width: 12%;" class="text-center">Stranded (<span class="estimate-tag">Est.</span>)</th>
+        <th style="width: 24%;">Tactical Recommendation</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td class="text-center"><strong>1</strong></td>
+        <td><strong>Tatopani</strong> (village)</td>
+        <td class="text-center">95.0%</td>
+        <td class="text-center">45.0%</td>
+        <td class="text-center">4</td>
+        <td class="text-center">20</td>
+        <td>EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY)</td>
+      </tr>
+      
+      <tr>
+        <td class="text-center"><strong>2</strong></td>
+        <td><strong>Larcha</strong> (village)</td>
+        <td class="text-center">79.5%</td>
+        <td class="text-center">45.0%</td>
+        <td class="text-center">1</td>
+        <td class="text-center">5</td>
+        <td>EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY)</td>
+      </tr>
+      
+      <tr>
+        <td class="text-center"><strong>3</strong></td>
+        <td><strong>Barhabise</strong> (town)</td>
+        <td class="text-center">0.0%</td>
+        <td class="text-center">30.0%</td>
+        <td class="text-center">4</td>
+        <td class="text-center">20</td>
+        <td>MONITORING / STANDBY</td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  <div class="section-title">Earth Observation Sensor Acquisition Status</div>
+  <div class="sensor-box">
+    <div class="sensor-item">
+      <strong>Sentinel-1 SAR:</strong> Acquired &amp; Calibrated (Rel. Orbit: 42)
+    </div>
+    <div class="sensor-item">
+      <strong>Sentinel-2 Optical:</strong> Clear Ingestion (Cloud: 10.0%)
+    </div>
+    <div class="sensor-item">
+      <strong>Sensor Occlusion (cant_see):</strong> 16.49% of ROI occluded
+    </div>
+  </div>
+
+  <footer>
+    <div class="attribution-text">Contains modified Copernicus Sentinel data 2026.</div>
+    <div class="attribution-text">Produced using Copernicus WorldDEM-30 © DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.</div>
+    <div class="attribution-text">© OpenStreetMap contributors.</div>
+    <div class="attribution-text">Citations: Bountos et al., 2024 (Kuro Siwo); Bonafilia et al., CVPR Workshops 2020 (Sen1Floods11, if used).</div>
+    <div class="disclaimer">Educational prototype and research demonstration system, not an operational tool. No images of victims anywhere. All population counts are modelled planning estimates.</div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "way/bridge_1",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            85.3225,
+            27.975
+          ],
+          [
+            85.3275,
+            27.975
+          ]
+        ]
+      },
+      "properties": {
+        "highway": "primary",
+        "bridge": "yes",
+        "name": "Bhotekoshi Friendship Bridge",
+        "hit_prob": 0.0,
+        "is_damaged": false,
+        "bridge_status": "operational"
+      }
+    }
+  ]
+}

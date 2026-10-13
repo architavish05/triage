@@ -1,0 +1,4 @@
+rank,settlement_id,settlement_name,place_type,coordinates,trapped_risk,cutoff_prob,buildings_at_risk,stranded_population_estimate,population_data_type,household_size_assumption,priority_score,is_on_dry_island,escape_possible,nearest_hospital,recommended_action,rank_order
+1,place/3,Tatopani,village,"[85.3875, 28.0625]",0.45,0.95,4,20,estimate,5.0,1.71,False,True,Barhabise Primary Health Centre,EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY),1
+2,place/2,Larcha,village,"[85.325, 27.8875]",0.45,0.795,1,5,estimate,5.0,0.36,False,True,Barhabise Primary Health Centre,EMERGENCY SUPPLY RESUPPLY (CUT-OFF COMMUNITY),2
+3,place/1,Barhabise,town,"[85.2625, 27.975]",0.3,0.0,4,20,estimate,5.0,0.0,False,True,Barhabise Primary Health Centre,MONITORING / STANDBY,3

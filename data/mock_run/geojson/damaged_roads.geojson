@@ -1,0 +1,62 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "way/hwy_1",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            85.2625,
+            27.975
+          ],
+          [
+            85.325,
+            27.975
+          ],
+          [
+            85.325,
+            27.8875
+          ]
+        ]
+      },
+      "properties": {
+        "highway": "primary",
+        "name": "Araniko Highway",
+        "ref": "H03",
+        "hit_prob": 0.55,
+        "length_km": 11.48,
+        "damaged_length_km": 1.04,
+        "is_impassable": true,
+        "hazard_type": "debris"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/hwy_2",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            85.325,
+            27.8875
+          ],
+          [
+            85.3875,
+            28.0625
+          ]
+        ]
+      },
+      "properties": {
+        "highway": "secondary",
+        "name": "Northern Valley Road",
+        "hit_prob": 0.722,
+        "length_km": 20.37,
+        "damaged_length_km": 3.4,
+        "is_impassable": true,
+        "hazard_type": "debris"
+      }
+    }
+  ]
+}
