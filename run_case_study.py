@@ -4,8 +4,13 @@ Executes the complete Triage pipeline on the disaster scene, followed by
 post-hoc validation against Copernicus EMS EMSR927.
 """
 
+import sys
 from pathlib import Path
 import logging
+
+repo_root = Path(__file__).resolve().parent
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
 
 from src.pipeline import run
 from src.eval.compare_emsr927 import compare_with_emsr927

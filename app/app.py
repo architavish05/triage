@@ -3,8 +3,15 @@
 Streamlit decision-support application for disaster response teams.
 """
 
+import sys
 from pathlib import Path
 import json
+
+# Ensure repository root is on sys.path when executed via `streamlit run app/app.py`
+repo_root = Path(__file__).resolve().parent.parent
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
+
 import streamlit as st
 import folium
 from folium import plugins
