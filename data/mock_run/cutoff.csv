@@ -1,0 +1,4 @@
+rank,name,place,population_est,cutoff_prob,cutoff_prob_hospital,cutoff_prob_town,nearest_hospital,pre_event_distance_km
+1,Tatopani,village,2300,0.95,0.95,0.95,Barhabise Primary Health Centre,36.21
+2,Larcha,village,1200,0.795,0.795,0.795,Barhabise Primary Health Centre,15.84
+3,Barhabise,town,7500,0.0,0.0,0.0,Barhabise Primary Health Centre,0.0
