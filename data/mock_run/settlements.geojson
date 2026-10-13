@@ -1,0 +1,53 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "place/1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.2625,
+          27.975
+        ]
+      },
+      "properties": {
+        "name": "Barhabise",
+        "place": "town",
+        "population": "7500"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "place/2",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.325,
+          27.8875
+        ]
+      },
+      "properties": {
+        "name": "Larcha",
+        "place": "village",
+        "population": "1200"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "place/3",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.3875,
+          28.0625
+        ]
+      },
+      "properties": {
+        "name": "Tatopani",
+        "place": "village",
+        "population": "2300"
+      }
+    }
+  ]
+}
