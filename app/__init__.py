@@ -1,0 +1,1 @@
+"""Triage dashboard application package."""

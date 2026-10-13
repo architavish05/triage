@@ -14,21 +14,35 @@ import numpy as np
 import streamlit as st
 from streamlit_folium import st_folium
 
-# Prepend project root to sys.path so src imports succeed under Streamlit
-repo_root = Path(__file__).resolve().parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+# Prepend project root and app directory to sys.path so src and components imports succeed
+app_dir = Path(__file__).resolve().parent
+repo_root = app_dir.parent
+for p in (str(repo_root), str(app_dir)):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from src.pipeline import run
-from app.components import (
-    build_folium_map,
-    load_run_from_folder,
-    render_footer,
-    render_header,
-    render_kpi_row,
-    render_priority_villages_table,
-    render_tabs,
-)
+
+try:
+    from app.components import (
+        build_folium_map,
+        load_run_from_folder,
+        render_footer,
+        render_header,
+        render_kpi_row,
+        render_priority_villages_table,
+        render_tabs,
+    )
+except (ImportError, ModuleNotFoundError):
+    from components import (
+        build_folium_map,
+        load_run_from_folder,
+        render_footer,
+        render_header,
+        render_kpi_row,
+        render_priority_villages_table,
+        render_tabs,
+    )
 
 # Page configuration
 st.set_page_config(
