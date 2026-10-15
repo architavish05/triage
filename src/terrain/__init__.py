@@ -5,7 +5,9 @@ from src.terrain.hand_slope import (
     compute_hand,
     compute_slope,
     extract_drainage_network,
+    filter_and_export_terrain,
     filter_impossible_flood,
+    save_raster,
 )
 from src.terrain.shadow_mask import (
     RadarOcclusionResult,
@@ -19,6 +21,8 @@ __all__ = [
     "compute_hand",
     "extract_drainage_network",
     "filter_impossible_flood",
+    "filter_and_export_terrain",
+    "save_raster",
     "TerrainFilterResult",
     "get_orbit_look_vector",
     "compute_radar_shadow_layover",
