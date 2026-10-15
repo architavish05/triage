@@ -81,8 +81,19 @@ def generate_sms_summary(
     text_content = "\n".join(lines)
 
     if output_path is not None:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
+        p = Path(output_path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
             f.write(text_content)
+
+        # Mirror across reports/sitrep_sms.txt and root sms.txt
+        if p.name == "sitrep_sms.txt" and p.parent.name == "reports":
+            with open(p.parent.parent / "sms.txt", "w", encoding="utf-8") as f:
+                f.write(text_content)
+        elif p.name == "sms.txt":
+            reports_dir = p.parent / "reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            with open(reports_dir / "sitrep_sms.txt", "w", encoding="utf-8") as f:
+                f.write(text_content)
 
     return text_content
