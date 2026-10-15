@@ -1,0 +1,366 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "HLZ_227",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.38001,
+          28.07754
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_227",
+        "slope_deg": 2.5,
+        "area_m2": 5400.0,
+        "nearest_settlement": "Tatopani",
+        "distance_to_settlement_m": 1823.5,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_273",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.37383,
+          28.06523
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_273",
+        "slope_deg": 1.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Tatopani",
+        "distance_to_settlement_m": 1373.8,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_299",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.38066,
+          28.05703
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_299",
+        "slope_deg": 1.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Tatopani",
+        "distance_to_settlement_m": 904.0,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_304",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.38848,
+          28.05293
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_304",
+        "slope_deg": 1.8,
+        "area_m2": 3600.0,
+        "nearest_settlement": "Tatopani",
+        "distance_to_settlement_m": 1066.6,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_305",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.39824,
+          28.05384
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_305",
+        "slope_deg": 1.0,
+        "area_m2": 2700.0,
+        "nearest_settlement": "Tatopani",
+        "distance_to_settlement_m": 1425.5,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_487",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.25684,
+          27.98949
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_487",
+        "slope_deg": 1.2,
+        "area_m2": 4500.0,
+        "nearest_settlement": "Barhabise",
+        "distance_to_settlement_m": 1701.7,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_551",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.26348,
+          27.97227
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_551",
+        "slope_deg": 2.0,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Barhabise",
+        "distance_to_settlement_m": 318.2,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_572",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.26738,
+          27.96543
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_572",
+        "slope_deg": 2.7,
+        "area_m2": 2700.0,
+        "nearest_settlement": "Barhabise",
+        "distance_to_settlement_m": 1165.1,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_585",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.26055,
+          27.96406
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_585",
+        "slope_deg": 0.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Barhabise",
+        "distance_to_settlement_m": 1229.1,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_786",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32728,
+          27.90254
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_786",
+        "slope_deg": 3.3,
+        "area_m2": 2700.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1684.2,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_793",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.31361,
+          27.90072
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_793",
+        "slope_deg": 2.3,
+        "area_m2": 2700.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1843.6,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_800",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32158,
+          27.89844
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_800",
+        "slope_deg": 2.2,
+        "area_m2": 3600.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1259.4,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_813",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.33916,
+          27.89365
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_813",
+        "slope_deg": 2.2,
+        "area_m2": 3600.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1546.6,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_822",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.31133,
+          27.89434
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_822",
+        "slope_deg": 0.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1539.8,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_828",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.31426,
+          27.88887
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_828",
+        "slope_deg": 2.7,
+        "area_m2": 2700.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1063.6,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_841",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.33721,
+          27.88306
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_841",
+        "slope_deg": 2.6,
+        "area_m2": 7200.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1294.0,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_851",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32012,
+          27.88477
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_851",
+        "slope_deg": 1.5,
+        "area_m2": 3600.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 566.7,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_876",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32109,
+          27.87793
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_876",
+        "slope_deg": 2.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1129.2,
+        "connected_footpath": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HLZ_894",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32695,
+          27.87246
+        ]
+      },
+      "properties": {
+        "hlz_id": "HLZ_894",
+        "slope_deg": 2.5,
+        "area_m2": 1800.0,
+        "nearest_settlement": "Larcha",
+        "distance_to_settlement_m": 1680.3,
+        "connected_footpath": true
+      }
+    }
+  ]
+}
