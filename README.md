@@ -96,7 +96,7 @@ CDSE_PASSWORD=your_password_here
 ### 1. Python API Execution
 The unified public entry point executes the entire pipeline end-to-end:
 ```python
-from src.pipeline import run
+from p1_data.pipeline import run
 
 results = run(
     bbox=(85.20, 27.80, 85.45, 28.15),  # (min_lon, min_lat, max_lon, max_lat)
@@ -108,6 +108,11 @@ print("Damaged Buildings:", results["damage"].summary["damaged_buildings_count"]
 print("Top Priority Rescue:", results["rescue_priorities"][0].settlement_name)
 ```
 
+You can also run the pipeline CLI directly:
+```bash
+python -m p1_data.pipeline
+```
+
 ### 2. Run the Case Study
 To run the Trishuli corridor (26 Aug 2026) case study and generate post-hoc Copernicus EMS (EMSR927) validation metrics:
 ```bash
@@ -117,7 +122,7 @@ python run_case_study.py
 ### 3. Launch the Interactive Dashboard
 To launch the Streamlit decision-support application:
 ```bash
-streamlit run app/app.py
+streamlit run p4_app/app/app.py
 ```
 Dashboard features:
 - Area & date picker with scenario presets
@@ -128,9 +133,9 @@ Dashboard features:
 ### 4. Offline Field Kit Execution
 For air-gapped disaster operations without internet connectivity:
 ```python
-from src.offline.prefetch import prefetch_region
-from src.offline.export_bundle import export_responder_bundle
-from src.pipeline import run
+from p1_data.offline.prefetch import prefetch_region
+from p1_data.offline.export_bundle import export_responder_bundle
+from p1_data.pipeline import run
 
 # 1. Prefetch data in base camp before deploying to the field
 prefetch_region(bbox=(85.20, 27.80, 85.45, 28.15), flood_date="2026-08-26")
@@ -146,10 +151,10 @@ export_responder_bundle(results, bundle_output_dir=results["output_dir"] / "fiel
 
 ## Post-Hoc Validation Protocol (EMSR927)
 
-> **HARD SCIENTIFIC RULE**: Copernicus EMS (EMSR927) or any published damage map is **NEVER** ingested as an input or feature. It is loaded strictly post-hoc in `src/eval/compare_emsr927.py` after final pipeline execution to calculate unbiased IoU, precision, and recall metrics.
+> **HARD SCIENTIFIC RULE**: Copernicus EMS (EMSR927) or any published damage map is **NEVER** ingested as an input or feature. It is loaded strictly post-hoc in `p4_app/eval/compare_emsr927.py` after final pipeline execution to calculate unbiased IoU, precision, and recall metrics.
 
 ```bash
-python -c "from src.pipeline import run; from src.eval.compare_emsr927 import compare_with_emsr927; res = run((85.20, 27.80, 85.45, 28.15), '2026-08-26'); compare_with_emsr927(res['class_map'], res['confidence'], res['output_dir'] / 'eval')"
+python -c "from p1_data.pipeline import run; from p4_app.eval.compare_emsr927 import compare_with_emsr927; res = run((85.20, 27.80, 85.45, 28.15), '2026-08-26'); compare_with_emsr927(res['class_map'], res['confidence'], res['output_dir'] / 'eval')"
 ```
 
 ---

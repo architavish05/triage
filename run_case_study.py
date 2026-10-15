@@ -12,8 +12,8 @@ repo_root = Path(__file__).resolve().parent
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
-from src.pipeline import run
-from src.eval.compare_emsr927 import compare_with_emsr927
+from p1_data.pipeline import run
+from p4_app.eval.compare_emsr927 import compare_with_emsr927
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("case_study")
