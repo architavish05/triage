@@ -36,7 +36,10 @@ try:
         fill_depressions,
         trace_downstream_path,
     )
-    from p4_app.network.cutoff import SettlementIsolation
+    try:
+        from p4_app.network.cutoff import SettlementIsolation
+    except ImportError:
+        from src.network.cutoff import SettlementIsolation
     from p3_terrain.rescue.dry_islands import check_settlement_on_dry_island, identify_dry_islands
     from p3_terrain.rescue.escape_time import compute_high_ground_mask, evaluate_settlement_escape_time
     from p3_terrain.rescue.landing_zones import (

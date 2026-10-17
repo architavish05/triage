@@ -1,6 +1,7 @@
 """Executable CLI runner for Phase 6 flowpath tracing."""
 
 import sys
+
 try:
     from p3_terrain.flowpath.trace import main
 except ImportError:

@@ -1,6 +1,7 @@
 """Executable CLI runner for Phase 3 terrain filtering."""
 
 import sys
+
 try:
     from p3_terrain.terrain.hand_slope import main
 except ImportError:

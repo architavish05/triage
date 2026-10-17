@@ -1,6 +1,7 @@
 """Executable CLI runner for Phase 7 rescue intelligence."""
 
 import sys
+
 try:
     from p3_terrain.rescue.trapped_risk import main
 except ImportError:

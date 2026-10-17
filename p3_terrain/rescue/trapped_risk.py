@@ -264,6 +264,7 @@ export_rescue_priorities_csv = export_trapped_csv
 
 
 def main(run_dir_str: str = "data/mock_run") -> None:
+    """CLI runner to execute dry island extraction, HLZ detection, and rescue prioritization."""
     from PIL import Image
     try:
         from p3_terrain.rescue.dry_islands import identify_dry_islands
