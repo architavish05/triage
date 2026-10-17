@@ -11,7 +11,8 @@ Identifies safe helicopter touchdown sites near at-risk settlements:
 from dataclasses import asdict, dataclass
 import json
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.ndimage import label
@@ -137,3 +138,50 @@ def detect_landing_zones(
 
     logger.info(f"Identified {len(candidates)} safe Helicopter Landing Zones (HLZ).")
     return candidates, geojson_out
+
+
+def export_landing_zones_geojson(
+    candidates_or_fc: Union[List[LandingZoneCandidate], Dict[str, Any]],
+    output_file: Union[Path, str],
+) -> Path:
+    """Export helicopter landing zone candidates to GeoJSON FeatureCollection.
+
+    Args:
+        candidates_or_fc: List of LandingZoneCandidate objects or GeoJSON FeatureCollection dict.
+        output_file: Target file path.
+
+    Returns:
+        Path to written GeoJSON file.
+    """
+    out_path = Path(output_file)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if isinstance(candidates_or_fc, dict) and "features" in candidates_or_fc:
+        fc = candidates_or_fc
+    else:
+        features = []
+        for cand in candidates_or_fc:
+            features.append({
+                "type": "Feature",
+                "id": cand.hlz_id,
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [round(cand.coordinates[0], 5), round(cand.coordinates[1], 5)],
+                },
+                "properties": {
+                    "hlz_id": cand.hlz_id,
+                    "slope_deg": round(cand.slope_deg, 1),
+                    "area_m2": round(cand.area_m2, 1),
+                    "nearest_settlement": cand.nearest_settlement,
+                    "distance_to_settlement_m": round(cand.distance_to_settlement_m, 1),
+                    "connected_footpath": cand.connected_footpath,
+                },
+            })
+        fc = {"type": "FeatureCollection", "features": features}
+
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(fc, f, indent=2)
+
+    logger.info(f"Saved {len(fc.get('features', []))} landing zones to {out_path}")
+    return out_path
+

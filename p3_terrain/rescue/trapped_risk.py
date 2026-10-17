@@ -7,10 +7,11 @@ Computes:
 """
 
 from dataclasses import asdict, dataclass
+import csv
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -183,11 +184,219 @@ def compute_rescue_priorities(
     return items
 
 
-def export_rescue_priority_json(priority_items: List[RescuePriorityItem], output_file: Path) -> Path:
+def export_rescue_priority_json(priority_items: List[RescuePriorityItem], output_file: Union[Path, str]) -> Path:
     """Export rescue priority rankings to JSON."""
-    output_file.parent.mkdir(parents=True, exist_ok=True)
+    out_path = Path(output_file)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     serialized = [asdict(item) for item in priority_items]
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(serialized, f, indent=2)
-    logger.debug(f"Saved rescue priority JSON to {output_file}")
-    return output_file
+    logger.debug(f"Saved rescue priority JSON to {out_path}")
+    return out_path
+
+
+def export_trapped_csv(
+    priority_items: List[RescuePriorityItem],
+    output_file: Union[Path, str],
+) -> Path:
+    """Export rescue prioritization table to trapped.csv matching the contract schema.
+
+    Args:
+        priority_items: List of RescuePriorityItem objects.
+        output_file: Target CSV file path.
+
+    Returns:
+        Path to written CSV file.
+    """
+    out_path = Path(output_file)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    fieldnames = [
+        "rank",
+        "settlement_id",
+        "settlement_name",
+        "place_type",
+        "coordinates",
+        "trapped_risk",
+        "cutoff_prob",
+        "buildings_at_risk",
+        "stranded_population_estimate",
+        "population_data_type",
+        "household_size_assumption",
+        "priority_score",
+        "is_on_dry_island",
+        "escape_possible",
+        "nearest_hospital",
+        "recommended_action",
+        "rank_order",
+    ]
+
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for item in priority_items:
+            coords_str = f"[{item.coordinates[0]}, {item.coordinates[1]}]"
+            writer.writerow({
+                "rank": item.rank,
+                "settlement_id": item.settlement_id,
+                "settlement_name": item.settlement_name,
+                "place_type": item.place_type,
+                "coordinates": coords_str,
+                "trapped_risk": item.trapped_risk,
+                "cutoff_prob": item.cutoff_prob,
+                "buildings_at_risk": item.buildings_at_risk,
+                "stranded_population_estimate": item.stranded_population_estimate,
+                "population_data_type": item.population_data_type,
+                "household_size_assumption": item.household_size_assumption,
+                "priority_score": item.priority_score,
+                "is_on_dry_island": item.is_on_dry_island,
+                "escape_possible": item.escape_possible,
+                "nearest_hospital": item.nearest_hospital,
+                "recommended_action": item.recommended_action,
+                "rank_order": getattr(item, "rank_order", item.rank),
+            })
+
+    logger.info(f"Saved {len(priority_items)} rescue priority items to {out_path}")
+    return out_path
+
+
+export_rescue_priorities_csv = export_trapped_csv
+
+
+def main(run_dir_str: str = "data/mock_run") -> None:
+    """CLI runner to execute dry island extraction, HLZ detection, and rescue prioritization."""
+    from PIL import Image
+    try:
+        from p3_terrain.rescue.dry_islands import identify_dry_islands
+        from p3_terrain.rescue.escape_time import compute_high_ground_mask, evaluate_settlement_escape_time
+        from p3_terrain.rescue.landing_zones import detect_landing_zones, export_landing_zones_geojson
+    except ImportError:
+        from src.rescue.dry_islands import identify_dry_islands
+        from src.rescue.escape_time import compute_high_ground_mask, evaluate_settlement_escape_time
+        from src.rescue.landing_zones import detect_landing_zones, export_landing_zones_geojson
+
+    run_dir = Path(run_dir_str)
+    if not run_dir.exists():
+        raise FileNotFoundError(f"Directory not found: {run_dir}")
+
+    # Load rasters
+    cls = np.array(Image.open(run_dir / "class.tif")).astype(np.uint8)
+    hand = np.array(Image.open(run_dir / "hand.tif")).astype(np.float32)
+    slope = np.array(Image.open(run_dir / "slope.tif")).astype(np.float32)
+    cant_see_path = run_dir / "cant_see.tif"
+    cant_see = np.array(Image.open(cant_see_path)) > 0 if cant_see_path.exists() else np.zeros(cls.shape, dtype=bool)
+
+    # Load grid transform
+    grid_path = run_dir / "grid.json"
+    transform = (85.2, 27.8, 85.45, 28.15, 0.001953125, 0.002734375)
+    if grid_path.exists():
+        with open(grid_path, "r", encoding="utf-8") as f:
+            transform = tuple(json.load(f).get("transform", transform))
+
+    # Load settlements
+    settlements_path = run_dir / "settlements.geojson"
+    settlements_fc = {"type": "FeatureCollection", "features": []}
+    if settlements_path.exists():
+        with open(settlements_path, "r", encoding="utf-8") as f:
+            settlements_fc = json.load(f)
+
+    # 1. Dry islands
+    dry_island_mask, island_props = identify_dry_islands(cls, hand, safe_hand_threshold=25.0)
+
+    # 2. High ground mask & escape checks
+    high_ground_mask = compute_high_ground_mask(hand, slope, cls)
+    escape_checks = {}
+    for feat in settlements_fc.get("features", []):
+        s_name = feat.get("properties", {}).get("name", "Settlement")
+        s_coords = feat.get("geometry", {}).get("coordinates", [0.0, 0.0])
+        check = evaluate_settlement_escape_time(
+            settlement_lon=s_coords[0],
+            settlement_lat=s_coords[1],
+            settlement_name=s_name,
+            arrival_time_mins=120.0,
+            high_ground_mask=high_ground_mask,
+            transform=transform,
+        )
+        escape_checks[s_name] = check
+
+    # 3. Flat HLZs (< 5 deg, area >= 1800 m2)
+    hlz_candidates, hlz_fc = detect_landing_zones(
+        slope=slope,
+        class_map=cls,
+        cant_see_mask=cant_see,
+        transform=transform,
+        settlements_geojson=settlements_fc,
+        max_slope_deg=5.0,
+        min_pixels_area=2,
+    )
+
+    # 4. Load cutoff records and buildings
+    s_by_name = {f.get("properties", {}).get("name"): f for f in settlements_fc.get("features", [])}
+    cutoff_path = run_dir / "cutoff.csv"
+    isolation_records: List[SettlementIsolation] = []
+    if cutoff_path.exists():
+        with open(cutoff_path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                s_name = r.get("name", "")
+                s_feat = s_by_name.get(s_name, {})
+                s_id = s_feat.get("id", f"place/{len(isolation_records)+1}")
+                s_coords = tuple(s_feat.get("geometry", {}).get("coordinates", [0.0, 0.0]))
+                isolation_records.append(SettlementIsolation(
+                    settlement_id=s_id,
+                    name=s_name,
+                    place_type=r.get("place", "village"),
+                    coordinates=s_coords,
+                    population_est=int(float(r.get("population_est", 1000))),
+                    cutoff_prob=float(r.get("cutoff_prob", 0.0)),
+                    cutoff_prob_hospital=float(r.get("cutoff_prob_hospital", 0.0)),
+                    cutoff_prob_town=float(r.get("cutoff_prob_town", 0.0)),
+                    nearest_hospital_name=r.get("nearest_hospital", "Regional Hospital"),
+                    pre_event_distance_km=float(r.get("pre_event_distance_km", 10.0)),
+                ))
+
+    bldgs_path = run_dir / "geojson" / "damaged_buildings.geojson"
+    bldgs_fc = {"type": "FeatureCollection", "features": []}
+    if bldgs_path.exists():
+        with open(bldgs_path, "r", encoding="utf-8") as f:
+            bldgs_fc = json.load(f)
+
+    # 5. Compute rescue priorities
+    priority_items = compute_rescue_priorities(
+        isolation_records=isolation_records,
+        damaged_buildings_geojson=bldgs_fc,
+        dry_island_mask=dry_island_mask,
+        transform=transform,
+        escape_checks=escape_checks,
+        household_size=5.0,
+    )
+
+    # 6. Export outputs
+    trapped_csv_path = run_dir / "trapped.csv"
+    rescue_csv_path = run_dir / "rescue_priorities.csv"
+    export_trapped_csv(priority_items, trapped_csv_path)
+    export_trapped_csv(priority_items, rescue_csv_path)
+
+    geojson_dir = run_dir / "geojson"
+    if geojson_dir.exists():
+        export_rescue_priority_json(priority_items, geojson_dir / "rescue_priorities.json")
+        export_landing_zones_geojson(hlz_fc, geojson_dir / "landing_zones.geojson")
+    export_landing_zones_geojson(hlz_fc, run_dir / "landing_zones.geojson")
+
+    print(f"[Rescue] Successfully processed {run_dir}:")
+    print(f"  - Dry islands detected: {len(island_props)}")
+    print(f"  - Helicopter landing zones (< 5 deg): {len(hlz_candidates)}")
+    print(f"  - Settlements ranked: {len(priority_items)}")
+    for item in priority_items:
+        print(f"    Rank {item.rank}: {item.settlement_name} ({item.place_type}) - "
+              f"Priority Score: {item.priority_score:.2f}, Cutoff: {item.cutoff_prob*100:.1f}%, "
+              f"Trapped Risk: {item.trapped_risk:.2f}, Stranded Est: {item.stranded_population_estimate} (estimate)")
+    print(f"  - Output trapped CSV: {trapped_csv_path}")
+    print(f"  - Output HLZ GeoJSON: {run_dir / 'landing_zones.geojson'}")
+
+
+if __name__ == "__main__":
+    import sys
+    target = sys.argv[1] if len(sys.argv) > 1 else "data/mock_run"
+    main(target)
+

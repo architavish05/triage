@@ -7,8 +7,10 @@ corridor buffering, and physics-based flood surge arrival time estimation.
 
 from dataclasses import asdict, dataclass
 import heapq
+import json
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -346,3 +348,163 @@ def calculate_settlement_arrival_times(
 
     logger.info(f"Identified {len(arrivals)} settlements along downstream flood corridor.")
     return arrivals
+
+
+def export_flowpath_geojson(
+    trace: DownstreamTrace,
+    output_file: Union[Path, str],
+    settlement_arrivals: Optional[List[SettlementArrival]] = None,
+) -> Path:
+    """Export traced flood surge trajectory and settlement arrival times to GeoJSON.
+
+    Args:
+        trace: DownstreamTrace result.
+        output_file: Target file path for GeoJSON.
+        settlement_arrivals: Optional list of chronological settlement arrival items.
+
+    Returns:
+        Path to written GeoJSON file.
+    """
+    out_path = Path(output_file)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    features = []
+
+    # 1. Main LineString feature of flood routing trajectory
+    line_feature = {
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [[round(lon, 10), round(lat, 10)] for lon, lat in trace.path_coords],
+        },
+        "properties": {
+            "name": "Flood surge route",
+            "length_km": round(trace.total_length_km, 2),
+            "total_time_hours": round(trace.total_time_hours, 2),
+            "settlement_arrivals": [asdict(a) for a in settlement_arrivals] if settlement_arrivals else [],
+        },
+    }
+    features.append(line_feature)
+
+    # 2. Point features for settlements along the flood corridor
+    if settlement_arrivals:
+        for arr in settlement_arrivals:
+            pt_feat = {
+                "type": "Feature",
+                "id": arr.settlement_id,
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [round(arr.coordinates[0], 6), round(arr.coordinates[1], 6)],
+                },
+                "properties": {
+                    "rank_order": arr.rank_order,
+                    "name": arr.name,
+                    "place_type": arr.place_type,
+                    "distance_from_source_km": round(arr.distance_from_source_km, 2),
+                    "elevation_m": round(arr.elevation_m, 1),
+                    "arrival_time_mins": round(arr.arrival_time_mins, 1),
+                    "arrival_time_hours": round(arr.arrival_time_hours, 2),
+                    "warning_lead_time_urgency": arr.warning_lead_time_urgency,
+                },
+            }
+            features.append(pt_feat)
+
+    fc = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(fc, f, indent=2)
+
+    logger.info(f"Saved flowpath GeoJSON with {len(features)} features to {out_path}")
+    return out_path
+
+
+def export_downstream_trace_json(
+    trace: DownstreamTrace,
+    output_file: Union[Path, str],
+) -> Path:
+    """Export raw downstream trace coordinates to JSON."""
+    out_path = Path(output_file)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    coords = [[round(lon, 10), round(lat, 10)] for lon, lat in trace.path_coords]
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(coords, f)
+    logger.info(f"Saved downstream trace JSON to {out_path}")
+    return out_path
+
+
+def main(run_dir_str: str = "data/mock_run") -> None:
+    """CLI runner to execute D8 depression filling and flowpath tracing against a run directory."""
+    try:
+        from p1_data.fetch.dem import generate_synthetic_dem
+    except ImportError:
+        from src.fetch.dem import generate_synthetic_dem
+
+    run_dir = Path(run_dir_str)
+    if not run_dir.exists():
+        raise FileNotFoundError(f"Directory not found: {run_dir}")
+
+    grid_path = run_dir / "grid.json"
+    settlements_path = run_dir / "settlements.geojson"
+
+    bbox = (85.2, 27.8, 85.45, 28.15)
+    shape = (128, 128)
+    transform = (85.2, 27.8, 85.45, 28.15, 0.001953125, 0.002734375)
+
+    if grid_path.exists():
+        with open(grid_path, "r", encoding="utf-8") as f:
+            grid = json.load(f)
+            bbox = tuple(grid.get("bbox", bbox))
+            shape = tuple(grid.get("shape", shape))
+            transform = tuple(grid.get("transform", transform))
+
+    # Generate or fetch elevation raster matching the scene
+    dem_data = generate_synthetic_dem(bbox, shape=shape)
+    filled_dem = fill_depressions(dem_data.elevation)
+    d8_dir, flow_accum = compute_d8_flow(filled_dem, res_meters=30.0)
+
+    # Initiate breach at top-center (consistent with pipeline)
+    start_lon = (bbox[0] + bbox[2]) / 2.0
+    start_lat = bbox[3] - 0.05
+    trace = trace_downstream_path(
+        d8_dir=d8_dir,
+        filled_dem=filled_dem,
+        start_coords=(start_lon, start_lat),
+        transform=transform,
+        res_meters=30.0,
+    )
+
+    settlement_arrivals: List[SettlementArrival] = []
+    if settlements_path.exists():
+        with open(settlements_path, "r", encoding="utf-8") as f:
+            settlements_fc = json.load(f)
+        settlement_arrivals = calculate_settlement_arrival_times(
+            trace=trace,
+            settlements_geojson=settlements_fc,
+            buffer_meters=10000.0,  # Buffer to capture impacted settlements along regional corridor
+        )
+
+    # Export flowpath.geojson and downstream_trace.json
+    flowpath_path = run_dir / "flowpath.geojson"
+    export_flowpath_geojson(trace, flowpath_path, settlement_arrivals=settlement_arrivals)
+
+    geojson_dir = run_dir / "geojson"
+    if geojson_dir.exists():
+        trace_json_path = geojson_dir / "downstream_trace.json"
+        export_downstream_trace_json(trace, trace_json_path)
+
+    print(f"[Flowpath] Successfully processed {run_dir}:")
+    print(f"  - Trajectory waypoints: {len(trace.path_coords)}")
+    print(f"  - Total length: {trace.total_length_km:.2f} km")
+    print(f"  - Total time: {trace.total_time_hours:.2f} hours")
+    print(f"  - Impacted settlements: {len(settlement_arrivals)}")
+    print(f"  - Output GeoJSON: {flowpath_path}")
+
+
+if __name__ == "__main__":
+    import sys
+    target = sys.argv[1] if len(sys.argv) > 1 else "data/mock_run"
+    main(target)
+
