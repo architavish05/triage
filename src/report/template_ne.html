@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <title>ट्रायज विपद् वस्तुस्थिति प्रतिवेदन - {{ flood_date }}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+    body { font-family: "Preeti", "Kalimati", "Noto Sans Devanagari", sans-serif; font-size: 11px; line-height: 1.35; color: #1e293b; margin: 0; padding: 0; }
+    .header { border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .title-box h1 { margin: 0; font-size: 19px; font-weight: 800; color: #0f172a; }
+    .title-box .subtitle { font-size: 10px; color: #64748b; font-weight: 600; }
+    .meta-box { text-align: right; font-size: 9.5px; color: #475569; }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 9px; background: #fee2e2; color: #991b1b; }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
+    .kpi-val { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+    .kpi-val.alert { color: #dc2626; }
+    .kpi-label { font-size: 8.5px; font-weight: 700; color: #64748b; }
+    .estimate-tag { font-size: 7.5px; color: #d97706; font-weight: 700; }
+
+    .section-title { font-size: 11.5px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 10px; margin-bottom: 6px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5px; }
+    th { background: #f1f5f9; color: #334155; font-weight: 700; text-align: left; padding: 5px 6px; border-bottom: 1.5px solid #cbd5e1; font-size: 8.5px; }
+    td { padding: 4.5px 6px; border-bottom: 1px solid #f1f5f9; }
+    tr:nth-child(even) { background: #fafafa; }
+    .text-center { text-align: center; }
+
+    .sensor-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 9px; }
+    .sensor-item strong { color: #334155; }
+
+    footer { border-top: 1px solid #cbd5e1; padding-top: 6px; margin-top: 12px; font-size: 8px; color: #64748b; line-height: 1.3; }
+    .attribution-text { margin-bottom: 3px; font-weight: 500; }
+    .disclaimer { font-style: italic; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-box">
+      <h1>ट्रायज विपद् वस्तुस्थिति प्रतिवेदन</h1>
+      <div class="subtitle">भू-उपग्रह तथ्याङ्क आधारित बाढी-पहिरो क्षति नक्साङ्कन तथा उद्धार प्राथमिकता</div>
+    </div>
+    <div class="meta-box">
+      <div><strong>घटना मिति:</strong> {{ flood_date }}</div>
+      <div><strong>भौगोलिक क्षेत्र:</strong> {{ bbox_str }}</div>
+      <div><span class="badge">विपद् प्रतिवेदन</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val alert">{{ summary.damaged_buildings_count }}</div>
+      <div class="kpi-label">क्षतिग्रस्त घरधुरी</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">{{ summary.damaged_roads_km }} km</div>
+      <div class="kpi-label">अवरुद्ध सडक</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">{{ summary.damaged_bridges_count }}</div>
+      <div class="kpi-label">क्षतिग्रस्त पुल</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val alert">{{ cutoff_settlements_count }}</div>
+      <div class="kpi-label">सम्पर्कविहीन बस्ती</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">{{ dry_islands_count }}</div>
+      <div class="kpi-label">घेरिएका टापु बस्ती</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val alert">{{ total_stranded_estimate }}</div>
+      <div class="kpi-label">प्रभावित जनसंख्या (<span class="estimate-tag">अनुमानित</span>)</div>
+    </div>
+  </div>
+
+  <div class="section-title">तत्काल उद्धार आवश्यक बस्तीहरू (प्राथमिकता क्रम)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 5%;">क्र.सं.</th>
+        <th style="width: 25%;">बस्तीको नाम</th>
+        <th style="width: 12%;" class="text-center">सडक सम्पर्कविच्छेद</th>
+        <th style="width: 12%;" class="text-center">घेराउ जोखिम</th>
+        <th style="width: 10%;" class="text-center">जोखिममा घर</th>
+        <th style="width: 12%;" class="text-center">अनुमानित जनसंख्या</th>
+        <th style="width: 24%;">उद्धार कार्य सिफारिस</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in top_priorities %}
+      <tr>
+        <td class="text-center"><strong>{{ item.rank }}</strong></td>
+        <td><strong>{{ item.settlement_name }}</strong></td>
+        <td class="text-center">{{ (item.cutoff_prob * 100) | round(1) }}%</td>
+        <td class="text-center">{{ (item.trapped_risk * 100) | round(1) }}%</td>
+        <td class="text-center">{{ item.buildings_at_risk }}</td>
+        <td class="text-center">{{ item.stranded_population_estimate }}</td>
+        <td>{{ item.recommended_action }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="section-title">भू-उपग्रह अवलोकन स्थिति</div>
+  <div class="sensor-box">
+    <div class="sensor-item">
+      <strong>Sentinel-1 रडार:</strong> {{ s1_orbit_status }} (अन्तरिक्ष पथ: {{ s1_relative_orbit }})
+    </div>
+    <div class="sensor-item">
+      <strong>Sentinel-2 अप्टिकल:</strong> {{ s2_optical_status }}
+    </div>
+    <div class="sensor-item">
+      <strong>छायाँ/बादल अवरोध (cant_see):</strong> {{ cant_see_percent }}% भूभाग अदृश्य
+    </div>
+  </div>
+
+  <footer>
+    <div class="attribution-text">Contains modified Copernicus Sentinel data 2026.</div>
+    <div class="attribution-text">Produced using Copernicus WorldDEM-30 © DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.</div>
+    <div class="attribution-text">© OpenStreetMap contributors.</div>
+    <div class="attribution-text">Citations: Bountos et al., 2024 (Kuro Siwo); Bonafilia et al., CVPR Workshops 2020 (Sen1Floods11, if used).</div>
+    <div class="disclaimer">यो प्रणाली शैक्षिक तथा अनुसन्धान प्रयोजनका लागि मात्र हो, आधिकारिक उद्धार नियन्त्रण कक्ष होइन। पीडितहरूको कुनै पनि तस्बिर समावेश गरिएको छैन। सबै जनसंख्या विवरण अनुमानित हुन्।</div>
+  </footer>
+
+</body>
+</html>

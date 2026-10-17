@@ -56,6 +56,11 @@ def test_format_template_context_and_render(tmp_path):
     assert "html_ne" in reports
     assert reports["html_en"].exists()
     assert reports["html_ne"].exists()
+    assert "pdf_en" in reports
+    assert reports["pdf_en"].exists()
+    assert reports["pdf_en"].stat().st_size > 500
+    assert "pdf_ne" in reports
+    assert reports["pdf_ne"].exists()
 
     with open(reports["html_en"], "r", encoding="utf-8") as f:
         content_en = f.read()

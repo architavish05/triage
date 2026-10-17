@@ -379,8 +379,18 @@ def compute_damage_overlay(
     """
     logger.info("Computing asset damage overlay for buildings, highways, and bridges...")
 
+    empty_fc = {"type": "FeatureCollection", "features": []}
+    bldgs_in = getattr(osm_data, "buildings", empty_fc) if osm_data is not None else empty_fc
+    highways_in = getattr(osm_data, "highways", empty_fc) if osm_data is not None else empty_fc
+    bridges_in = getattr(osm_data, "bridges", empty_fc) if osm_data is not None else empty_fc
+
+    if class_map is None:
+        class_map = np.zeros((100, 100), dtype=np.uint8)
+    if confidence is None:
+        confidence = np.zeros(class_map.shape, dtype=np.float32)
+
     buildings_res, bldg_summary = assess_building_damage(
-        osm_data.buildings,
+        bldgs_in,
         class_map,
         confidence,
         transform,
@@ -388,7 +398,7 @@ def compute_damage_overlay(
     )
 
     roads_res, roads_summary = assess_road_damage(
-        osm_data.highways,
+        highways_in,
         class_map,
         confidence,
         transform,
@@ -396,7 +406,7 @@ def compute_damage_overlay(
     )
 
     bridges_res, bridge_summary = assess_bridge_damage(
-        osm_data.bridges,
+        bridges_in,
         class_map,
         confidence,
         transform,
@@ -425,13 +435,14 @@ def compute_damage_overlay(
 
 
 def save_damage_geojson(damage_result: DamageOverlayResult, output_dir: Path) -> Dict[str, Path]:
-    """Persist enriched damage GeoJSON layers and summary JSON to output directory."""
+    """Persist enriched damage GeoJSON layers, assets_damage.geojson, and summary JSON."""
     output_dir.mkdir(parents=True, exist_ok=True)
     paths = {
         "buildings": output_dir / "damaged_buildings.geojson",
         "roads": output_dir / "damaged_roads.geojson",
         "bridges": output_dir / "damaged_bridges.geojson",
         "summary": output_dir / "damage_summary.json",
+        "assets_damage": output_dir / "assets_damage.geojson",
     }
 
     with open(paths["buildings"], "w", encoding="utf-8") as f:
@@ -445,6 +456,32 @@ def save_damage_geojson(damage_result: DamageOverlayResult, output_dir: Path) ->
 
     with open(paths["summary"], "w", encoding="utf-8") as f:
         json.dump(damage_result.summary, f, indent=2)
+
+    # Combined assets_damage.geojson containing all evaluated assets
+    combined_features = []
+    if damage_result.damaged_buildings and isinstance(damage_result.damaged_buildings, dict):
+        combined_features.extend(damage_result.damaged_buildings.get("features", []))
+    if damage_result.damaged_roads and isinstance(damage_result.damaged_roads, dict):
+        combined_features.extend(damage_result.damaged_roads.get("features", []))
+    if damage_result.damaged_bridges and isinstance(damage_result.damaged_bridges, dict):
+        combined_features.extend(damage_result.damaged_bridges.get("features", []))
+
+    assets_damage_fc = {
+        "type": "FeatureCollection",
+        "features": combined_features,
+    }
+    with open(paths["assets_damage"], "w", encoding="utf-8") as f:
+        json.dump(assets_damage_fc, f, indent=2)
+
+    # If saving in a subfolder (e.g., 'geojson'), also mirror to parent run directory
+    if output_dir.name == "geojson":
+        parent_dir = output_dir.parent
+        with open(parent_dir / "assets_damage.geojson", "w", encoding="utf-8") as f:
+            json.dump(assets_damage_fc, f, indent=2)
+        with open(parent_dir / "damage_summary.json", "w", encoding="utf-8") as f:
+            json.dump(damage_result.summary, f, indent=2)
+        with open(parent_dir / "summary.json", "w", encoding="utf-8") as f:
+            json.dump(damage_result.summary, f, indent=2)
 
     logger.debug(f"Saved damage GeoJSONs and summary to {output_dir}")
     return paths

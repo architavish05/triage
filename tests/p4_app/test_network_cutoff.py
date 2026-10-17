@@ -166,10 +166,11 @@ def test_priority_table_and_exports(tmp_path):
     export_cutoff_table_csv(table, csv_file)
     assert csv_file.exists()
 
-    # Test GeoJSON export
+    # Test GeoJSON export and companion cutoff.csv
     geojson_file = tmp_path / "cutoff_settlements.geojson"
     export_cutoff_geojson(records, geojson_file)
     assert geojson_file.exists()
+    assert (tmp_path / "cutoff.csv").exists()
     with open(geojson_file, "r", encoding="utf-8") as f:
         data = json.load(f)
         assert data["type"] == "FeatureCollection"

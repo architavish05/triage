@@ -1,0 +1,1 @@
+"""Triage application package."""
