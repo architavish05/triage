@@ -175,6 +175,10 @@ def test_compute_damage_overlay_end_to_end(tmp_path):
     out_dir = tmp_path / "damage_outputs"
     paths = save_damage_geojson(damage_result, out_dir)
 
+    assert "assets_damage" in paths
+    assert (out_dir / "assets_damage.geojson").exists()
+    assert (out_dir / "damage_summary.json").exists()
+
     for key, p in paths.items():
         assert p.exists()
         with open(p, "r", encoding="utf-8") as f:

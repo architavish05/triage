@@ -16,8 +16,13 @@ from streamlit_folium import st_folium
 
 # Prepend project root and app directory to sys.path so package and components imports succeed
 app_dir = Path(__file__).resolve().parent
-repo_root = app_dir.parent.parent
-for p in (str(repo_root), str(app_dir.parent), str(app_dir)):
+repo_root = app_dir
+for candidate in (app_dir, app_dir.parent, app_dir.parent.parent):
+    if (candidate / "CONTRACT.md").exists() or (candidate / ".git").exists():
+        repo_root = candidate
+        break
+
+for p in (str(repo_root), str(app_dir), str(repo_root / "p4_app"), str(repo_root / "app")):
     if p not in sys.path:
         sys.path.insert(0, p)
 

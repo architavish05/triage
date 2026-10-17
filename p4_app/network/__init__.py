@@ -35,7 +35,15 @@ def run_cutoff(
     )
     table = build_cutoff_table(records)
     if output_file is not None:
-        export_cutoff_geojson(records, Path(output_file))
+        p = Path(output_file)
+        if p.suffix == ".csv":
+            export_cutoff_table_csv(table, p)
+        elif p.suffix == ".geojson":
+            export_cutoff_geojson(records, p)
+        else:
+            p.mkdir(parents=True, exist_ok=True)
+            export_cutoff_table_csv(table, p / "cutoff.csv")
+            export_cutoff_geojson(records, p / "cutoff_settlements.geojson")
     return records, table
 
 

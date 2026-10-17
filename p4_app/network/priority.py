@@ -21,8 +21,9 @@ def build_cutoff_table(isolation_records: List[SettlementIsolation]) -> List[Dic
     for rank, item in enumerate(isolation_records, start=1):
         table.append({
             "rank": rank,
-            "settlement_id": item.settlement_id,
+            "name": item.name,
             "settlement_name": item.name,
+            "place": item.place_type,
             "place_type": item.place_type,
             "population_est": item.population_est,
             "cutoff_prob": item.cutoff_prob,
@@ -32,21 +33,32 @@ def build_cutoff_table(isolation_records: List[SettlementIsolation]) -> List[Dic
             "pre_event_distance_km": item.pre_event_distance_km,
             "longitude": item.coordinates[0],
             "latitude": item.coordinates[1],
+            "settlement_id": item.settlement_id,
         })
     return table
 
 
 def export_cutoff_table_csv(ranked_table: List[Dict[str, Any]], output_path: Path) -> Path:
-    """Save ranked settlement cut-off table to CSV."""
+    """Save ranked settlement cut-off table to CSV with contract and mock-run compatible schema."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    std_columns = [
+        "rank", "name", "place", "population_est",
+        "cutoff_prob", "cutoff_prob_hospital", "cutoff_prob_town",
+        "nearest_hospital", "pre_event_distance_km",
+    ]
     if not ranked_table:
         with open(output_path, "w", newline="", encoding="utf-8") as f:
-            f.write("rank,settlement_name,place_type,population_est,cutoff_prob\n")
+            f.write(",".join(std_columns) + "\n")
         return output_path
 
-    fieldnames = list(ranked_table[0].keys())
+    first = ranked_table[0]
+    if all(k in first for k in std_columns):
+        fieldnames = std_columns
+    else:
+        fieldnames = list(first.keys())
+
     with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(ranked_table)
 
@@ -82,9 +94,17 @@ def export_cutoff_geojson(isolation_records: List[SettlementIsolation], output_p
     geojson = {"type": "FeatureCollection", "features": features}
 
     if output_path is not None:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
+        p = Path(output_path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
             json.dump(geojson, f, indent=2)
+
+        # Also write cutoff.csv in parent run directory and same folder for contract compliance
+        table = build_cutoff_table(isolation_records)
+        export_cutoff_table_csv(table, p.parent / "cutoff.csv")
+        if p.parent.name == "geojson":
+            export_cutoff_table_csv(table, p.parent.parent / "cutoff.csv")
+
         logger.debug(f"Exported cut-off GeoJSON to {output_path}")
 
     return geojson

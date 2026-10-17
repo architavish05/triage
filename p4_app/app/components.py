@@ -34,6 +34,11 @@ def load_run_from_folder(run_dir_str: str) -> Dict[str, Any]:
 
     # 1. Damage summary
     summary_path = geojson_dir / "damage_summary.json"
+    if not summary_path.exists():
+        summary_path = run_dir / "damage_summary.json"
+    if not summary_path.exists():
+        summary_path = run_dir / "summary.json"
+
     summary: Dict[str, Any] = {}
     if summary_path.exists():
         with open(summary_path, "r", encoding="utf-8") as f:
@@ -44,14 +49,47 @@ def load_run_from_folder(run_dir_str: str) -> Dict[str, Any]:
     damaged_roads = _load_geojson(geojson_dir / "damaged_roads.geojson")
     damaged_bridges = _load_geojson(geojson_dir / "damaged_bridges.geojson")
     cutoff_settlements = _load_geojson(geojson_dir / "cutoff_settlements.geojson")
+    if not cutoff_settlements.get("features") and (run_dir / "settlements.geojson").exists():
+        cutoff_settlements = _load_geojson(run_dir / "settlements.geojson")
+
+    # If separate layers missing but assets_damage.geojson exists, parse assets
+    assets_dmg_path = run_dir / "assets_damage.geojson"
+    if not damaged_bldgs.get("features") and assets_dmg_path.exists():
+        all_assets = _load_geojson(assets_dmg_path)
+        b_feats, r_feats, br_feats = [], [], []
+        for feat in all_assets.get("features", []):
+            gtype = feat.get("geometry", {}).get("type", "")
+            props = feat.get("properties", {})
+            if "highway" in props or gtype == "LineString":
+                r_feats.append(feat)
+            elif "bridge" in props:
+                br_feats.append(feat)
+            else:
+                b_feats.append(feat)
+        if b_feats:
+            damaged_bldgs = {"type": "FeatureCollection", "features": b_feats}
+        if r_feats:
+            damaged_roads = {"type": "FeatureCollection", "features": r_feats}
+        if br_feats:
+            damaged_bridges = {"type": "FeatureCollection", "features": br_feats}
+
     hlz_geojson = _load_geojson(geojson_dir / "landing_zones.geojson")
 
     # 3. Downstream trace coords
     trace_path = geojson_dir / "downstream_trace.json"
-    trace_coords: List[Tuple[float, float]] = []
-    if trace_path.exists():
-        with open(trace_path, "r", encoding="utf-8") as f:
-            trace_coords = [tuple(p) for p in json.load(f)]
+    if not trace_path.exists() and (run_dir / "flowpath.geojson").exists():
+        fp_geo = _load_geojson(run_dir / "flowpath.geojson")
+        trace_coords = []
+        for feat in fp_geo.get("features", []):
+            coords = feat.get("geometry", {}).get("coordinates", [])
+            for c in coords:
+                if isinstance(c, (list, tuple)) and len(c) >= 2:
+                    trace_coords.append((float(c[0]), float(c[1])))
+    else:
+        trace_coords: List[Tuple[float, float]] = []
+        if trace_path.exists():
+            with open(trace_path, "r", encoding="utf-8") as f:
+                trace_coords = [tuple(p) for p in json.load(f)]
 
     # 4. Priorities
     priorities_path = geojson_dir / "rescue_priorities.json"
@@ -59,6 +97,29 @@ def load_run_from_folder(run_dir_str: str) -> Dict[str, Any]:
     if priorities_path.exists():
         with open(priorities_path, "r", encoding="utf-8") as f:
             priorities = json.load(f)
+    elif (run_dir / "rescue_priorities.csv").exists():
+        import csv
+        with open(run_dir / "rescue_priorities.csv", "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    lon = float(row.get("longitude", 0.0))
+                    lat = float(row.get("latitude", 0.0))
+                except (ValueError, TypeError):
+                    lon, lat = 0.0, 0.0
+                priorities.append({
+                    "settlement_name": row.get("settlement_name", row.get("name", "Settlement")),
+                    "place_type": row.get("place_type", row.get("place", "village")),
+                    "coordinates": (lon, lat),
+                    "cutoff_prob": float(row.get("cutoff_prob", 0.0)),
+                    "trapped_risk": float(row.get("trapped_risk", row.get("cutoff_prob", 0.5))),
+                    "buildings_at_risk": int(float(row.get("buildings_at_risk", 1))),
+                    "stranded_population_estimate": int(float(row.get("stranded_population_estimate", row.get("population_est", 10)))),
+                    "is_on_dry_island": row.get("is_on_dry_island", "False").lower() in ("true", "1"),
+                    "escape_possible": row.get("escape_possible", "False").lower() in ("true", "1"),
+                    "priority_score": float(row.get("priority_score", 1.0)),
+                    "recommended_action": row.get("recommended_action", "EVACUATION"),
+                })
     elif cutoff_settlements.get("features"):
         for feat in cutoff_settlements["features"]:
             props = feat.get("properties", {})
@@ -80,6 +141,8 @@ def load_run_from_folder(run_dir_str: str) -> Dict[str, Any]:
     # 5. Reports & SMS
     sms_text = ""
     sms_path = reports_dir / "sitrep_sms.txt"
+    if not sms_path.exists():
+        sms_path = run_dir / "sms.txt"
     if sms_path.exists():
         with open(sms_path, "r", encoding="utf-8") as f:
             sms_text = f.read()
